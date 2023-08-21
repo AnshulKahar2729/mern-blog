@@ -93,7 +93,6 @@ app.post("/post", uploadMiddleware.single("file"), async (req, res, next) => {
   const { title, summary, content } = req.body;
 
   const { originalname, path } = req.file;
-  console.log(path);
   const parts = originalname.split(".");
   const ext = parts[parts.length - 1];
   const newPath = (path + "." + ext).replace(/\\/g, '/');
@@ -119,6 +118,12 @@ app.post("/post", uploadMiddleware.single("file"), async (req, res, next) => {
 app.get("/post", async (req, res, next) => {
   const posts = await Post.find().populate("author", ["username"]).sort({createdAt : -1}).limit(20);
   res.json(posts);
+});
+
+app.get("/post/:id", async (req, res, next) => {
+  const {id} = req.params;
+  const postDoc = await Post.findById(id).populate("author", ["username"]);
+  res.json(postDoc);
 });
 
 app.listen(PORT, () => {
